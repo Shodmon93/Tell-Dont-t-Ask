@@ -1,15 +1,16 @@
 using Core;
+using Core.Entities;
 using Core.Interfaces;
 
 namespace Infrastructure.Services;
 
-public class UserService
+public class CustomerService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly ICustomerRepository _customerRepository;
 
-    public UserService(IUserRepository userRepository)
+    public CustomerService(ICustomerRepository customerRepository)
     {
-        _userRepository = userRepository;
+        _customerRepository = customerRepository;
     }
 
     public async Task<int> CreateOrGateUserId(CreateCustomerRequest request)
@@ -17,12 +18,12 @@ public class UserService
         foreach (var data in request.CreateCustomer)
         {
             var birthDate = DateTime.SpecifyKind(DateTime
-                .ParseExact(data.DateOfBirth, "dd.MM.yyyy", null).ToUniversalTime(),DateTimeKind.Utc).Date;
-            var existingUser = await _userRepository
-                .GetUserByDetailsAsync(data.Passport, data.Name, birthDate);
-            if (existingUser != null)
+                .ParseExact(data.DateOfBirth, "dd.MM.yyyy", null), DateTimeKind.Utc).Date;
+            var existingCustomer = await _customerRepository
+                .GetCustomerByDetailsAsync(data.Passport);
+            if (existingCustomer != null)
             {
-                return existingUser.ID;
+                return existingCustomer.ID;
             }
 
             var newCustomer = new Customer
@@ -39,8 +40,8 @@ public class UserService
 
             };
             newCustomer.SetBirthDate(data.DateOfBirth);
-            await _userRepository.AddUserAsync(newCustomer);
-            await _userRepository.SaveChangesAsync();
+            await _customerRepository.AddCustomerAsync(newCustomer);
+            await _customerRepository.SaveChangesAsync();
             return newCustomer.ID;
         }
 

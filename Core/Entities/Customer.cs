@@ -1,6 +1,4 @@
-using System.Runtime.InteropServices.JavaScript;
-
-namespace Core;
+namespace Core.Entities;
 
 public class Customer
 {
@@ -15,6 +13,7 @@ public class Customer
     public string Address { get; set; }
     public string PhoneNumber { get; set; }
     public string  Gender { get; set; }
+    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
 
     public string GetFormattedBirthDate()
     {
@@ -23,8 +22,14 @@ public class Customer
 
     public void SetBirthDate(string birthDateString)
     {
-        var date = DateTime.ParseExact(birthDateString, "dd.MM.yyyy", null);
-        BirthDate = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Utc);
+        BirthDate = DateTime.SpecifyKind(DateTime.ParseExact(birthDateString, "dd.MM.yyyy", null),
+            DateTimeKind.Utc);
+    }
+
+    public void AddLoan(Loan loan)
+    {
+        loan.CustomerId = ID;
+        Loans.Add(loan);
     }
     
 }

@@ -1,4 +1,5 @@
 using Core;
+using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -16,9 +17,13 @@ public class DataBridgeDbContext : DbContext
     }
 
     public DbSet<Customer> Customer { get; set; }
+    public DbSet<Loan> Loan { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.BirthDate).HasColumnType("DATE");
         base.OnModelCreating(modelBuilder);
+        
     }
 }

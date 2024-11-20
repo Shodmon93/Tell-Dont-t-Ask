@@ -1,4 +1,5 @@
 using Core;
+using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -6,30 +7,30 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+public class CustomerRepository : ICustomerRepository
 {
     private readonly DataBridgeDbContext _context;
-    private readonly ILogger<UserRepository> _logger;
+    private readonly ILogger<CustomerRepository> _logger;
 
-    public UserRepository(ILogger<UserRepository> logger, DataBridgeDbContext context)
+    public CustomerRepository(ILogger<CustomerRepository> logger, DataBridgeDbContext context)
     {
         _logger = logger;
         _context = context;
     }
 
-    public async Task<Customer> GetUserByIdAsync(int id)
+    public async Task<Customer> GetCustomerByIdAsync(int id)
     {
         return await _context.Customer.FindAsync(id);
     }
 
-    public async Task<Customer> GetUserByDetailsAsync(string passport, string firstName, DateTime birthdate)
+    public async Task<Customer> GetCustomerByDetailsAsync(string passport)
     {
         return await _context.Customer.FirstOrDefaultAsync(u =>
-            u.Passport == passport && u.FirstName == firstName && u.BirthDate.Date == birthdate.Date);
+            u.Passport == passport);
         
     }
 
-    public async Task AddUserAsync(Customer customer)
+    public async Task AddCustomerAsync(Customer customer)
     {
         await _context.Customer.AddAsync(customer);
     }
